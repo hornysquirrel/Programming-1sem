@@ -25,12 +25,12 @@ private:
         long long DepthR = 0;
         long long SizeR = 0;
         if(!leftLeaf()){
-            DepthL = (*leftChild).Depth;
-            SizeL = (*leftChild).Size;
+            DepthL = leftChild->Depth;
+            SizeL = leftChild->Size;
         }
         if(!rightLeaf()){
-            DepthR = (*rightChild).Depth;
-            SizeR = (*rightChild).Size;
+            DepthR = rightChild->Depth;
+            SizeR = rightChild->Size;
         }
         Depth = std::max(DepthL, DepthR) + 1;
         Size = SizeL + SizeR + 1;
@@ -38,26 +38,26 @@ private:
 
     void removeLeft(){
         if(!leftLeaf()) {
-            (*leftChild).parent = nullptr;
+            leftChild->parent = nullptr;
             leftChild = nullptr;
         }
     }
 
     void removeRight(){
         if(!rightLeaf()) {
-            (*rightChild).parent = nullptr;
+            rightChild->parent = nullptr;
             rightChild = nullptr;
         }
     }
 
     void removeParent(){
         if(!root()){
-            if((*parent).leftChild == this){
-                (*parent).removeLeft();
+            if(parent->leftChild == this){
+                parent->removeLeft();
             }
             else {
-                if ((*parent).rightChild == this) {
-                    (*parent).removeRight();
+                if (parent->rightChild == this) {
+                    parent->removeRight();
                 }
             }
         }
@@ -66,8 +66,8 @@ private:
     void connectLeft(Element* element){
         removeLeft();
         if(element != nullptr) {
-            (*element).removeParent();
-            (*element).parent = this;
+            element->removeParent();
+            element->parent = this;
         }
         leftChild = element;
     }
@@ -75,17 +75,17 @@ private:
     void connectRight(Element* element){
         removeRight();
         if(element != nullptr) {
-            (*element).removeParent();
-            (*element).parent = this;
+            element->removeParent();
+            element->parent = this;
         }
         rightChild = element;
     }
 
     void connect(Element* element){
-        if((*element).value < value){
+        if(element->value < value){
             connectLeft(element);
         }
-        if((*element).value > value){
+        if(element->value > value){
             connectRight(element);
         }
         checkDepthSizeLong();
@@ -96,24 +96,24 @@ private:
         bool left = false;
         bool right = false;
         if(par != nullptr) {
-            if ((*par).leftChild == this){
+            if (par->leftChild == this){
                 left = true;
             }
-            if ((*par).rightChild == this){
+            if (par->rightChild == this){
                 right = true;
             }
         }
-        Element* center = (*leftChild).rightChild;
-        (*leftChild).connectRight(this);
+        Element* center = leftChild->rightChild;
+        leftChild->connectRight(this);
         if(left) {
-            (*par).connectLeft(leftChild);
+            par->connectLeft(leftChild);
         }
         if(right) {
-            (*par).connectRight(leftChild);
+            par->connectRight(leftChild);
         }
         connectLeft(center);
         checkDepthSize();
-        (*parent).checkDepthSize();
+        parent->checkDepthSize();
     }
 
     void rotateRight(){
@@ -121,30 +121,30 @@ private:
         bool left = false;
         bool right = false;
         if(par != nullptr) {
-            if ((*par).leftChild == this){
+            if (par->leftChild == this){
                 left = true;
             }
-            if ((*par).rightChild == this){
+            if (par->rightChild == this){
                 right = true;
             }
         }
-        Element* center = (*rightChild).leftChild;
-        (*rightChild).connectLeft(this);
+        Element* center = rightChild->leftChild;
+        rightChild->connectLeft(this);
         if(left) {
-            (*par).connectLeft(rightChild);
+            par->connectLeft(rightChild);
         }
         if(right) {
-            (*par).connectRight(rightChild);
+            par->connectRight(rightChild);
         }
         connectRight(center);
         checkDepthSize();
-        (*parent).checkDepthSize();
+        parent->checkDepthSize();
     }
 
     void balanceWeak(){
         if(delta(this) == 2){
             if(delta(leftChild) == -1){
-                (*leftChild).rotateRight();
+                leftChild->rotateRight();
                 rotateLeft();
             }
             else{
@@ -153,7 +153,7 @@ private:
         }
         if(delta(this) == -2){
             if(delta(rightChild) == 1){
-                (*rightChild).rotateLeft();
+                rightChild->rotateLeft();
                 rotateRight();
             }
             else{
@@ -168,7 +168,7 @@ private:
             Element* par = parent;
             removeParent();
             if(par != nullptr){
-                (*par).checkDepthSizeLong();
+                par->checkDepthSizeLong();
             }
             delete this;
         }
@@ -180,7 +180,7 @@ public:
                 return this;
             }
             else{
-                return (*leftChild).binFind(x);
+                return leftChild->binFind(x);
             }
         }
         if(value < x){
@@ -188,7 +188,7 @@ public:
                 return this;
             }
             else{
-                return (*rightChild).binFind(x);
+                return rightChild->binFind(x);
             }
         }
         else{
@@ -197,20 +197,20 @@ public:
     }
 
     void insert(Element* element){
-        Element* leaf = binFind((*element).value);
-        (*leaf).connect(element);
+        Element* leaf = binFind(element->value);
+        leaf->connect(element);
     }
 
     bool exists(long long x){
         Element* leaf = binFind(x);
-        return (*leaf).value == x;
+        return leaf->value == x;
     }
 
     void balanceStrong(){
         Element* par = parent;
         balanceWeak();
         if(par != nullptr){
-            (*par).balanceStrong();
+            par->balanceStrong();
         }
     }
 
@@ -238,43 +238,43 @@ public:
         bool left = false;
         bool right = false;
         if(par != nullptr) {
-            if ((*par).leftChild == this){
+            if (par->leftChild == this){
                 left = true;
             }
-            if ((*par).rightChild == this){
+            if (par->rightChild == this){
                 right = true;
             }
         }
         bool leftE = false;
         bool rightE = false;
         if(parE != nullptr){
-            if ((*parE).leftChild == element){
+            if (parE->leftChild == element){
                 leftE = true;
             }
-            if ((*parE).rightChild == element){
+            if (parE->rightChild == element){
                 rightE = true;
             }
         }
         if(leftE){
-            (*parE).connectLeft(this);
+            parE->connectLeft(this);
         }
         if(rightE){
-            (*parE).connectRight(this);
+            parE->connectRight(this);
         }
-        (*element).connectLeft(leftC);
-        (*element).connectRight(rightC);
+        element->connectLeft(leftC);
+        element->connectRight(rightC);
         if(left) {
-            (*par).connectLeft(element);
+            par->connectLeft(element);
         }
         if(right) {
-            (*par).connectRight(element);
+            par->connectRight(element);
         }
         if(leftFix){
-            (*element).connectLeft(this);
+            element->connectLeft(this);
             parent = element;
         }
         if(rightFix){
-            (*element).connectRight(this);
+            element->connectRight(this);
             parent = element;
         }
         connectLeft(leftCE);
@@ -284,20 +284,20 @@ public:
     void checkDepthSizeLong() {
         checkDepthSize();
         if(!root()){
-            (*parent).checkDepthSizeLong();
+            parent->checkDepthSizeLong();
         }
     }
 
     Element* sizeFind(long long k){
         long long SizeR = 0;
         if(!rightLeaf()){
-            SizeR = (*rightChild).Size;
+            SizeR = rightChild->Size;
         }
         if(SizeR + 1 > k){
-            return (*rightChild).sizeFind(k);
+            return rightChild->sizeFind(k);
         }
         if(SizeR + 1 < k){
-            return (*leftChild).sizeFind(k - SizeR - 1);
+            return leftChild->sizeFind(k - SizeR - 1);
         }
         else{
             return this;
@@ -313,10 +313,10 @@ long long delta(Element* element){
         long long DepthL = 0;
         long long DepthR = 0;
         if(!(*element).leftLeaf()){
-            DepthL = (*(*element).leftChild).Depth;
+            DepthL = element->leftChild->Depth;
         }
         if(!(*element).rightLeaf()){
-            DepthR = (*(*element).rightChild).Depth;
+            DepthR = element->rightChild->Depth;
         }
         return DepthL - DepthR;
     }
@@ -327,11 +327,11 @@ Element* Next(Element* element, long long x){
         return nullptr;
     }
     else{
-        if((*element).value <= x){
-            return Next((*element).rightChild, x);
+        if(element->value <= x){
+            return Next(element->rightChild, x);
         }
         else{
-            Element* check = Next((*element).leftChild, x);
+            Element* check = Next(element->leftChild, x);
             if(check == nullptr){
                 return element;
             }
@@ -348,15 +348,15 @@ struct AVLTree {
 
     void insert(long long x){
         auto leafX = new Element;
-        (*leafX).value = x;
+        leafX->value = x;
         if(size == 0){
             root = leafX;
         }
         else{
-            (*root).insert(leafX);
-            (*leafX).balanceStrong();
-            if(!(*root).root()){
-                root = (*root).parent;
+            root->insert(leafX);
+            leafX->balanceStrong();
+            if(!root->root()){
+                root = root->parent;
             }
         }
         size++;
@@ -364,7 +364,7 @@ struct AVLTree {
 
     bool exists(long long x) const{
         if(root != nullptr) {
-            return (*root).exists(x);
+            return root->exists(x);
         }
         else{
             return false;
@@ -373,32 +373,32 @@ struct AVLTree {
 
     void erase(long long x){
         if(root != nullptr) {
-            Element *pointerDeath = (*root).binFind(x);
-            if((*pointerDeath).value == x) {
+            Element *pointerDeath = root->binFind(x);
+            if(pointerDeath->value == x) {
                 Element* next = Next(pointerDeath, x);
                 if(root == pointerDeath){
-                    if((*root).rightLeaf()){
-                        root = (*pointerDeath).leftChild;
+                    if(root->rightLeaf()){
+                        root = pointerDeath->leftChild;
                     }
                     else{
-                        root = (*pointerDeath).rightChild;
+                        root = pointerDeath->rightChild;
                     }
                 }
                 if(next == nullptr){
                     next = pointerDeath;
                 }
                 if(pointerDeath != next){
-                    (*pointerDeath).swap(next);
+                    pointerDeath->swap(next);
                 }
-                Element* par = (*pointerDeath).parent;
-                (*pointerDeath).eraseHalfLeaf();
+                Element* par = pointerDeath->parent;
+                pointerDeath->eraseHalfLeaf();
                 if(par != nullptr){
-                    (*par).balanceStrong();
+                    par->balanceStrong();
                 }
                 size--;
                 if(root != nullptr){
-                    while(!(*root).root()){
-                        root = (*root).parent;
+                    while(!root->root()){
+                        root = root->parent;
                     }
                 }
             }
@@ -407,7 +407,7 @@ struct AVLTree {
 
     long long kMax (long long k){
         if(root != nullptr) {
-            return (*(*root).sizeFind(k)).value;
+            return root->sizeFind(k)->value;
         }
         else return 0;
     }
