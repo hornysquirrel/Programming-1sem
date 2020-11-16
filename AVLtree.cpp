@@ -22,36 +22,36 @@ private:
         long long DepthL = 0;
         long long DepthR = 0;
         if(!leftLeaf()){
-            DepthL = (*leftChild).Depth;
+            DepthL = leftChild->Depth;
         }
         if(!rightLeaf()){
-            DepthR = (*rightChild).Depth;
+            DepthR = rightChild->Depth;
         }
         Depth = std::max(DepthL, DepthR) + 1;
     }
 
     void removeLeft(){
         if(!leftLeaf()) {
-            (*leftChild).parent = nullptr;
+            leftChild->parent = nullptr;
             leftChild = nullptr;
         }
     }
 
     void removeRight(){
         if(!rightLeaf()) {
-            (*rightChild).parent = nullptr;
+            rightChild->parent = nullptr;
             rightChild = nullptr;
         }
     }
 
     void removeParent(){
         if(!root()){
-            if((*parent).leftChild == this){
-                (*parent).removeLeft();
+            if(parent->leftChild == this){
+                parent->removeLeft();
             }
             else {
-                if ((*parent).rightChild == this) {
-                    (*parent).removeRight();
+                if (parent->rightChild == this) {
+                    parent->removeRight();
                 }
             }
         }
@@ -60,8 +60,8 @@ private:
     void connectLeft(Element* element){
         removeLeft();
         if(element != nullptr) {
-            (*element).removeParent();
-            (*element).parent = this;
+            element->removeParent();
+            element->parent = this;
         }
         leftChild = element;
     }
@@ -69,17 +69,17 @@ private:
     void connectRight(Element* element){
         removeRight();
         if(element != nullptr) {
-            (*element).removeParent();
-            (*element).parent = this;
+            element->removeParent();
+            element->parent = this;
         }
         rightChild = element;
     }
 
     void connect(Element* element){
-        if((*element).value < value){
+        if(element->value < value){
             connectLeft(element);
         }
-        if((*element).value > value){
+        if(element->value > value){
             connectRight(element);
         }
         checkDepthLong();
@@ -90,24 +90,24 @@ private:
         bool left = false;
         bool right = false;
         if(par != nullptr) {
-            if ((*par).leftChild == this){
+            if (par->leftChild == this){
                 left = true;
             }
-            if ((*par).rightChild == this){
+            if (par->rightChild == this){
                 right = true;
             }
         }
-        Element* center = (*leftChild).rightChild;
-        (*leftChild).connectRight(this);
+        Element* center = leftChild->rightChild;
+        leftChild->connectRight(this);
         if(left) {
-            (*par).connectLeft(leftChild);
+            par->connectLeft(leftChild);
         }
         if(right) {
-            (*par).connectRight(leftChild);
+            par->connectRight(leftChild);
         }
         connectLeft(center);
         checkDepth();
-        (*parent).checkDepth();
+        parent->checkDepth();
     }
 
     void rotateRight(){
@@ -115,30 +115,30 @@ private:
         bool left = false;
         bool right = false;
         if(par != nullptr) {
-            if ((*par).leftChild == this){
+            if (par->leftChild == this){
                 left = true;
             }
-            if ((*par).rightChild == this){
+            if (par->rightChild == this){
                 right = true;
             }
         }
-        Element* center = (*rightChild).leftChild;
-        (*rightChild).connectLeft(this);
+        Element* center = rightChild->leftChild;
+        rightChild->connectLeft(this);
         if(left) {
-            (*par).connectLeft(rightChild);
+            par->connectLeft(rightChild);
         }
         if(right) {
-            (*par).connectRight(rightChild);
+            par->connectRight(rightChild);
         }
         connectRight(center);
         checkDepth();
-        (*parent).checkDepth();
+        parent->checkDepth();
     }
 
     void balanceWeak(){
         if(delta(this) == 2){
             if(delta(leftChild) == -1){
-                (*leftChild).rotateRight();
+                leftChild->rotateRight();
                 rotateLeft();
             }
             else{
@@ -147,7 +147,7 @@ private:
         }
         if(delta(this) == -2){
             if(delta(rightChild) == 1){
-                (*rightChild).rotateLeft();
+                rightChild->rotateLeft();
                 rotateRight();
             }
             else{
@@ -162,7 +162,7 @@ private:
             Element* par = parent;
             removeParent();
             if(par != nullptr){
-                (*par).checkDepthLong();
+                par->checkDepthLong();
             }
             delete this;
         }
@@ -174,7 +174,7 @@ public:
                 return this;
             }
             else{
-                return (*leftChild).binFind(x);
+                return leftChild->binFind(x);
             }
         }
         if(value < x){
@@ -182,7 +182,7 @@ public:
                 return this;
             }
             else{
-                return (*rightChild).binFind(x);
+                return rightChild->binFind(x);
             }
         }
         else{
@@ -191,20 +191,20 @@ public:
     }
 
     void insert(Element* element){
-        Element* leaf = binFind((*element).value);
-        (*leaf).connect(element);
+        Element* leaf = binFind(element->value);
+        leaf->connect(element);
     }
 
     bool exists(long long x){
         Element* leaf = binFind(x);
-        return (*leaf).value == x;
+        return leaf->value == x;
     }
 
     void balanceStrong(){
         Element* par = parent;
         balanceWeak();
         if(par != nullptr){
-            (*par).balanceStrong();
+            par->balanceStrong();
         }
     }
 
@@ -232,43 +232,43 @@ public:
         bool left = false;
         bool right = false;
         if(par != nullptr) {
-            if ((*par).leftChild == this){
+            if (par->leftChild == this){
                 left = true;
             }
-            if ((*par).rightChild == this){
+            if (par->rightChild == this){
                 right = true;
             }
         }
         bool leftE = false;
         bool rightE = false;
         if(parE != nullptr){
-            if ((*parE).leftChild == element){
+            if (parE->leftChild == element){
                 leftE = true;
             }
-            if ((*parE).rightChild == element){
+            if (parE->rightChild == element){
                 rightE = true;
             }
         }
         if(leftE){
-            (*parE).connectLeft(this);
+            parE->connectLeft(this);
         }
         if(rightE){
-            (*parE).connectRight(this);
+            parE->connectRight(this);
         }
-        (*element).connectLeft(leftC);
-        (*element).connectRight(rightC);
+        element->connectLeft(leftC);
+        element->connectRight(rightC);
         if(left) {
-            (*par).connectLeft(element);
+            par->connectLeft(element);
         }
         if(right) {
-            (*par).connectRight(element);
+            par->connectRight(element);
         }
         if(leftFix){
-            (*element).connectLeft(this);
+            element->connectLeft(this);
             parent = element;
         }
         if(rightFix){
-            (*element).connectRight(this);
+            element->connectRight(this);
             parent = element;
         }
         connectLeft(leftCE);
@@ -291,10 +291,10 @@ long long delta(Element* element){
         long long DepthL = 0;
         long long DepthR = 0;
         if(!(*element).leftLeaf()){
-            DepthL = (*(*element).leftChild).Depth;
+            DepthL = element->leftChild->Depth;
         }
         if(!(*element).rightLeaf()){
-            DepthR = (*(*element).rightChild).Depth;
+            DepthR = element->rightChild->Depth;
         }
         return DepthL - DepthR;
     }
@@ -305,11 +305,11 @@ Element* Next(Element* element, long long x){
         return nullptr;
     }
     else{
-        if((*element).value <= x){
-            return Next((*element).rightChild, x);
+        if(element->value <= x){
+            return Next(element->rightChild, x);
         }
         else{
-            Element* check = Next((*element).leftChild, x);
+            Element* check = Next(element->leftChild, x);
             if(check == nullptr){
                 return element;
             }
@@ -325,11 +325,11 @@ Element* Prev(Element* element, long long x){
         return nullptr;
     }
     else{
-        if((*element).value >= x){
-            return Prev((*element).leftChild, x);
+        if(element->value >= x){
+            return Prev(element->leftChild, x);
         }
         else{
-            Element* check = Prev((*element).rightChild, x);
+            Element* check = Prev(element->rightChild, x);
             if(check == nullptr){
                 return element;
             }
@@ -346,15 +346,15 @@ struct AVLTree {
 
     void insert(long long x){
         auto leafX = new Element;
-        (*leafX).value = x;
+        leafX->value = x;
         if(size == 0){
             root = leafX;
         }
         else{
-            (*root).insert(leafX);
-            (*leafX).balanceStrong();
-            if(!(*root).root()){
-                root = (*root).parent;
+            root->insert(leafX);
+            leafX->balanceStrong();
+            if(!root->root()){
+                root = root->parent;
             }
         }
         size++;
@@ -362,12 +362,47 @@ struct AVLTree {
 
     bool exists(long long x) const{
         if(root != nullptr) {
-            return (*root).exists(x);
+            return root->exists(x);
         }
         else{
             return false;
         }
     }
+
+    void erase(long long x){
+        if(root != nullptr) {
+            Element *pointerDeath = root->binFind(x);
+            if(pointerDeath->value == x) {
+                Element* next = Next(pointerDeath, x);
+                if(root == pointerDeath){
+                    if(root->rightLeaf()){
+                        root = pointerDeath->leftChild;
+                    }
+                    else{
+                        root = pointerDeath->rightChild;
+                    }
+                }
+                if(next == nullptr){
+                    next = pointerDeath;
+                }
+                if(pointerDeath != next){
+                    pointerDeath->swap(next);
+                }
+                Element* par = pointerDeath->parent;
+                pointerDeath->eraseHalfLeaf();
+                if(par != nullptr){
+                    par->balanceStrong();
+                }
+                size--;
+                if(root != nullptr){
+                    while(!root->root()){
+                        root = root->parent;
+                    }
+                }
+            }
+        }
+    }
+
 
     bool nextExists(long long x){
         return (Next(root, x) != nullptr);
@@ -375,7 +410,7 @@ struct AVLTree {
 
     long long next(long long x){
         if(nextExists(x)) {
-            return (*Next(root, x)).value;
+            return Next(root, x)->value;
         }
         else{
             return 0;
@@ -388,44 +423,10 @@ struct AVLTree {
 
     long long prev(long long x){
         if(prevExists(x)) {
-            return (*Prev(root, x)).value;
+            return Prev(root, x)->value;
         }
         else{
             return 0;
-        }
-    }
-
-    void erase(long long x){
-        if(root != nullptr) {
-            Element *pointerDeath = (*root).binFind(x);
-            if((*pointerDeath).value == x) {
-                Element* next = Next(pointerDeath, x);
-                if(root == pointerDeath){
-                    if((*root).rightLeaf()){
-                        root = (*pointerDeath).leftChild;
-                    }
-                    else{
-                        root = (*pointerDeath).rightChild;
-                    }
-                }
-                if(next == nullptr){
-                    next = pointerDeath;
-                }
-                if(pointerDeath != next){
-                    (*pointerDeath).swap(next);
-                }
-                Element* par = (*pointerDeath).parent;
-                (*pointerDeath).eraseHalfLeaf();
-                if(par != nullptr){
-                    (*par).balanceStrong();
-                }
-                size--;
-                if(root != nullptr){
-                    while(!(*root).root()){
-                        root = (*root).parent;
-                    }
-                }
-            }
         }
     }
 };
